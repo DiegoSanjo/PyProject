@@ -1,0 +1,48 @@
+import pygame
+from PIL import Image
+
+def draw_board(the_board):
+    
+    pygame.init()
+    colors = [(255,204,153), (96,96,96)]
+    
+    n = len(the_board)
+    surface_sz = 480
+    sq_sz = surface_sz // n
+    
+    surface = pygame.display.set_mode((surface_sz, surface_sz))
+    
+    white_piece = pygame.image.load("white_circle.png")
+    black_piece = pygame.image.load("black_circle.png")
+    
+    w_piece_offset = (sq_sz-white_piece.get_width()) // 2
+    b_piece_offset = (sq_sz-black_piece.get_width()) // 2
+    
+    while True:
+        
+        ev = pygame.event.poll()
+        if ev.type == pygame.QUIT:
+            break
+        
+        for row in range(n):
+            c_indx = row % 2
+            for col in range(n):
+                the_square = (col*sq_sz, row*sq_sz, sq_sz, sq_sz)
+                surface.fill(colors[c_indx], the_square)
+        
+                c_indx = (c_indx + 1) % 2
+        
+        for (col, row) in enumerate(the_board):
+            surface.blit(white_piece, (col*sq_sz+w_piece_offset, row*sq_sz+w_piece_offset))
+        
+        black_board = [0,1,0,1,0,1,0,1]
+        
+        for (col, row) in enumerate(black_board):
+            surface.blit(black_piece, (col*sq_sz+b_piece_offset, row*sq_sz+b_piece_offset))
+           
+        pygame.display.flip()
+        
+    pygame.quit()
+
+if __name__ == "__main__":
+    draw_board([7,6,7,6,7,6,7,6])
