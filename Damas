@@ -1,29 +1,32 @@
 import pygame
 
 def draw_board(the_board):
+"""Dibuja un tablero de color gris y marrón de tamaño 480, que importa dos fichas de colores y las posiciona 
+en las posiciones dadas por una lista (the_board) en el caso de las blancas y una lista que es variable local en el 
+caso de las fichas de color negro"""
     
     pygame.init()
     colors = [(255,204,153), (96,96,96)]
     
-    n = len(the_board)
-    surface_sz = 480
-    sq_sz = surface_sz // n
+    n = len(the_board)    #Numero de filas que tiene como input el numero de elementos de la lista the_board
+    surface_sz = 480      #Tamaño de la pantalla
+    sq_sz = surface_sz // n    #Tamaño de los cuadrados 
     
-    surface = pygame.display.set_mode((surface_sz, surface_sz))
+    surface = pygame.display.set_mode((surface_sz, surface_sz))   #Configura la pantalla
     
-    white_piece = pygame.image.load("white_circle.png")
+    white_piece = pygame.image.load("white_circle.png")     #Importa las fichas como imagen
     black_piece = pygame.image.load("black_circle.png")
     
-    w_piece_offset = (sq_sz-white_piece.get_width()) // 2
+    w_piece_offset = (sq_sz-white_piece.get_width()) // 2    #Centra las fichas 
     b_piece_offset = (sq_sz-black_piece.get_width()) // 2
     
     while True:
         
         ev = pygame.event.poll()
-        if ev.type == pygame.QUIT:
+        if ev.type == pygame.QUIT:                      #Cerrar pygame y salir cuando se cierre la ventana 
             break
         
-        for row in range(n):
+        for row in range(n):                            #Dibuja los cuadrados del tablero
             c_indx = row % 2
             for col in range(n):
                 the_square = (col*sq_sz, row*sq_sz, sq_sz, sq_sz)
@@ -31,7 +34,7 @@ def draw_board(the_board):
         
                 c_indx = (c_indx + 1) % 2
         
-        for (col, row) in enumerate(the_board):
+        for (col, row) in enumerate(the_board):             #Colocar las fichas en función de la lista 
             surface.blit(white_piece, (col*sq_sz+w_piece_offset, row*sq_sz+w_piece_offset))
         
         black_board = [0,1,0,1,0,1,0,1]
@@ -43,5 +46,5 @@ def draw_board(the_board):
         
     pygame.quit()
 
-if __name__ == "__main__":
+if __name__ == "__main__":     #Ejecuta todo lo anterior
     draw_board([7,6,7,6,7,6,7,6])
