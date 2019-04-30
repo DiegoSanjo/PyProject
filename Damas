@@ -1,50 +1,88 @@
 import pygame
 
-def draw_board(the_board):
-"""Dibuja un tablero de color gris y marrón de tamaño 480, que importa dos fichas de colores y las posiciona 
-en las posiciones dadas por una lista (the_board) en el caso de las blancas y una lista que es variable local en el 
-caso de las fichas de color negro"""
+#Colores
+color = [(96,96,96),(255,204,153),(255, 255, 255)]  #Gris, Marrón, Blanco
+
+#Tamaños
+pantalla_size = (750, 750)
+borde_size = 30
+n_casillas = 8
+casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
+
+#Eje
+eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+#Tablero
+def crear_tablero(pantalla):
     
+    color = [(96,96,96),(255,204,153),(255, 255, 255)]  #Gris, Marrón, Blanco
+    pantalla_size = (750, 750)  #DIMENCIONES
+    borde_size = 30
+    n_casillas = 8
+    casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
+    
+    count = 0
+    for i in range(n_casillas):               #Columnas 
+        for j in range(n_casillas):         #Filas 
+            x = i * casillas_size + 30
+            y = j * casillas_size + 30
+            if count % 2 == 0:              #Dividir entre pares e impares para colorear
+                pygame.draw.rect(pantalla, color[0], [x, y, casillas_size, casillas_size])
+            else: 
+                pygame.draw.rect(pantalla, color[1], [x, y, casillas_size, casillas_size])
+            count += 1                      #Count para filas
+        count +=1                           #Count para columnas 
+            
+        fuente = pygame.font.Font(None, 30)
+        pantalla.blit(fuente.render(eje_y[i],1,color[0]), [i * casillas_size + borde_size * 2, borde_size-20])
+        pantalla.blit(fuente.render(str(i+1),1,color[0]), [borde_size -20, i * casillas_size + borde_size*2])
+
+#Posicion
+def posicion(mouse, actual):
+    n_casillas = 8
+    casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
+    
+    xr = mouse[0]
+    yr = mouse[1]
+    for i in range(n_casillas):
+        for j in range(n_casillas):
+            x = i * casillas_size + borde_size
+            y = j * casillas_size + borde_size
+            if (xr >= x) and (xr <= x + casillas_size) and (yr >= y) and (yr <= y + casillas_size):
+                actual = [eje_y[i], j + 1]
+    return actual
+
+            
+def main():
     pygame.init()
-    colors = [(255,204,153), (96,96,96)]
+
+    pantalla = pygame.display.set_mode(pantalla_size)
+    pygame.display.set_caption("PyDamas")
+
+    game_over = False 
     
-    n = len(the_board)    #Numero de filas que tiene como input el numero de elementos de la lista the_board
-    surface_sz = 480      #Tamaño de la pantalla
-    sq_sz = surface_sz // n    #Tamaño de los cuadrados 
-    
-    surface = pygame.display.set_mode((surface_sz, surface_sz))   #Configura la pantalla
-    
-    white_piece = pygame.image.load("white_circle.png")     #Importa las fichas como imagen
-    black_piece = pygame.image.load("black_circle.png")
-    
-    w_piece_offset = (sq_sz-white_piece.get_width()) // 2    #Centra las fichas 
-    b_piece_offset = (sq_sz-black_piece.get_width()) // 2
-    
-    while True:
+    seleccion = ["A","1"]
+
+    while game_over is False:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                game_over = True
+
+        botones = pygame.mouse.get_pos()
         
-        ev = pygame.event.poll()
-        if ev.type == pygame.QUIT:                      #Cerrar pygame y salir cuando se cierre la ventana 
-            break
+        if botones[0]:
+            pos = pygame.mouse.get_pos()
+            seleccion = posicion(pos, seleccion)
+            
+        pantalla.fill(color[2])
         
-        for row in range(n):                            #Dibuja los cuadrados del tablero
-            c_indx = row % 2
-            for col in range(n):
-                the_square = (col*sq_sz, row*sq_sz, sq_sz, sq_sz)
-                surface.fill(colors[c_indx], the_square)
-        
-                c_indx = (c_indx + 1) % 2
-        
-        for (col, row) in enumerate(the_board):             #Colocar las fichas en función de la lista 
-            surface.blit(white_piece, (col*sq_sz+w_piece_offset, row*sq_sz+w_piece_offset))
-        
-        black_board = [0,1,0,1,0,1,0,1]
-        
-        for (col, row) in enumerate(black_board):
-            surface.blit(black_piece, (col*sq_sz+b_piece_offset, row*sq_sz+b_piece_offset))
-           
+        crear_tablero(pantalla)
+        pygame.draw.rect(pantalla, color[2],[(eje_y.index(str(seleccion[0])) * casillas_size + borde_size),((int(seleccion[1])-1) * casillas_size + borde_size), casillas_size, casillas_size])
+        fuente = pygame.font.Font(None, 30)
+        pantalla.blit(fuente.render(str(seleccion),1,color[0]), [375,725])
         pygame.display.flip()
-        
+
     pygame.quit()
 
-if __name__ == "__main__":     #Ejecuta todo lo anterior
-    draw_board([7,6,7,6,7,6,7,6])
+if __name__ == "__main__":
+    main()
