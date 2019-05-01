@@ -57,7 +57,7 @@ def main():
             if evento.type == pygame.QUIT:
                 game_over = True
 
-        botones = pygame.mouse.get_pos()
+        botones = pygame.mouse.get_pressed()
         
         if botones[0]:
             pos = pygame.mouse.get_pos()
@@ -69,6 +69,16 @@ def main():
         pygame.draw.rect(pantalla, color[2],[(eje_y.index(str(seleccion[0])) * casillas_size + borde_size),((int(seleccion[1])-1) * casillas_size + borde_size), casillas_size, casillas_size])
         fuente = pygame.font.Font(None, 30)
         pantalla.blit(fuente.render(str(seleccion),1,color[0]), [375,725])
+        
+        black_piece = pygame.image.load("black_circle.png")
+        b_piece_centrada = (casillas_size-black_piece.get_width()) // 2
+        
+        if pygame.mouse.get_pressed() == (1,0,0) and len(posiciones_black) < 8:
+            posiciones_black.append((int(pygame.mouse.get_pos()[0])-b_piece_centrada,int(pygame.mouse.get_pos()[1])- b_piece_centrada))
+            
+        for i in posiciones_black:
+            pantalla.blit(black_piece, i)
+        
         pygame.display.flip()
 
     pygame.quit()
