@@ -1,5 +1,31 @@
 import pygame
 
+class damas:
+    
+    def __init__(self, color, posicion, tablero):
+        self.color = color
+        self.pos = posicion
+        self.tabl = tablero 
+        
+    def __str__(self):
+        return "Color:\t\t {0} \nPosicion:\t {1}".format(self.color, self.pos)
+    
+    def draw(self, pantalla, color, posicion):
+        if self.color == "Negro":
+            pantalla.blit(pygame.image.load("black_circle.png"), posicion)
+        if self.color == "Blanco":
+            pantalla.blit(pygame.image.load("white_circle.png"), posicion)
+    
+    def move(self):
+        if pygame.key.get_pressed()[K_DOWN]:
+            self.pos[0] += 86.25
+        elif pygame.key.get_pressed()[K_UP]:
+            self.pos[0] -= 86.25
+        elif pygame.key.get_pressed()[K_LEFT]:
+            self.pos[1] -= 86.25
+        elif pygame.key.get_pressed()[K_RIGHT]:
+            self.pos[1] -= 86.25
+
 #Tablero
 def crear_tablero(pantalla):
     
@@ -96,4 +122,5 @@ casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
 eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
 if __name__ == "__main__":
+    posiciones_black = []   #Ojo: Establecer error si hay más de 8 fichas
     main()
