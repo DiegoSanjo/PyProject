@@ -4,7 +4,7 @@ class damas:
     
     def __init__(self, color, posicion, tablero):
         self.color = color
-        self.pos = posicion
+        self.pos = (x,y)
         self.tabl = tablero 
         
     def __str__(self):
