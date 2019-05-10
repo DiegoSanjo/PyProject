@@ -2,39 +2,61 @@ import pygame
 
 class damas:
     
-    def __init__(self, color, posicion, tablero):
+    def __init__(self, color, posicion):
         self.color = color
-        self.pos = (x,y)
-        self.tabl = tablero 
+        self.pos = posicion
         
     def __str__(self):
         return "Color:\t\t {0} \nPosicion:\t {1}".format(self.color, self.pos)
     
-    def draw(self, pantalla, color, posicion):
+    def draw(self, screen):
         if self.color == "Negro":
-            pantalla.blit(pygame.image.load("black_circle.png"), posicion)
+            screen.blit(pygame.image.load("black_circle.png").convert(), self.pos)
         if self.color == "Blanco":
-            pantalla.blit(pygame.image.load("white_circle.png"), posicion)
+            screen.blit(pygame.image.load("white_circle.png").convert(), self.pos)
+    
+    def seleccionado(self, casilla, pos_raton):
+        if ((self.pos[0] - (casilla/2)) < pos_raton[0] < (self.pos[0] + (casilla/2))) and ((self.pos[1] - (casilla/2)) < pos_raton[1] < (self.pos[1] + (casilla/2))):
+            return True
+        else:
+            return False 
     
     def move(self):
-        if pygame.key.get_pressed()[K_DOWN]:
-            self.pos[0] += 86.25
-        elif pygame.key.get_pressed()[K_UP]:
-            self.pos[0] -= 86.25
-        elif pygame.key.get_pressed()[K_LEFT]:
-            self.pos[1] -= 86.25
-        elif pygame.key.get_pressed()[K_RIGHT]:
-            self.pos[1] -= 86.25
+        
+        key=pygame.key.get_pressed()
+        
+        if key[pygame.K_LEFT] and (self.pos[0] - 86.25) >30 and (self.pos[0] - 86.25) < 720: 
+            self.pos = (self.pos[0] - 86.25, self.pos[1])
+        if key[pygame.K_RIGHT] and (self.pos[0] + 86.25) > 30 and (self.pos[0] + 86.25) < 720:
+            self.pos = (self.pos[0] + 86.25, self.pos[1])
+        if key[pygame.K_UP]and (self.pos[1] - 86.25) > 30 and (self.pos[1] - 86.25) < 720:   
+            self.pos = (self.pos[0], self.pos[1] - 86.25)
+        if key[pygame.K_DOWN]and (self.pos[1] + 86.25) > 30 and (self.pos[1] + 86.25) < 720: 
+                self.pos = (self.pos[0], self.pos[1] + 86.25)
+
+            
+
+
+#Colores
+color = [(96,96,96),(255,204,153),(255, 255, 255), (241, 144, 86)]  #Gris, Marrón, Blanco, Naranja
+
+#Tamaños
+pantalla_size = (750, 750)
+borde_size = 30
+n_casillas = 8
+casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
+
+#Eje
+eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
 #Tablero
 def crear_tablero(pantalla):
     
     color = [(96,96,96),(255,204,153),(255, 255, 255)]  #Gris, Marrón, Blanco
-    pantalla_size = (750, 750)
+    pantalla_size = (750, 750)  #DIMENCIONES
     borde_size = 30
     n_casillas = 8
     casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
-    eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     
     count = 0
     for i in range(n_casillas):               #Columnas 
@@ -67,6 +89,10 @@ def posicion(mouse, actual):
                 actual = [eje_y[i], j + 1]
     return actual
 
+def BuscarKey(diccionario, localizacion):
+    for name, loc in diccionario.items():
+        if loc == localizacion:
+            return name
             
 def main():
     pygame.init()
@@ -77,13 +103,34 @@ def main():
     game_over = False 
     
     seleccion = ["A","1"]
+    
+    damas_blancas = ["A1","C1","E1","G1","B2","D2","F2","H2","A3","C3","E3","G3"]
+    damas_negras = ["B6","D6","F6","H6","A7","C7","E7","G7","B8","D8","F8","H8"]
+
+    dic_pos = {"A1":(46.25,46.25),"C1":(218.75,46.25),"E1":(391.25,46.25), "G1":(563.75,46.25),
+                       "B2":(132.5,132.5),"D2":(305,132.5),"F2":(477.5,132.5),"H2":(650,132.5),"A3":(46.25,218.75),
+                       "C3":(218.75,218.75),"E3":(391.25,218.75),"G3":(563.75,218.75), "B4":(132.5,305), "D4": (305,305), 
+                       "F4": (477.5,305),"H4":(650,305),"A5":(46.25,391.25),"C5":(218.75,391.25), "E5":(391.25,391.25),
+                       "G5":(563.75,391.25),"H8":(650,650),"F8":(477.5,650),"D8":(305,650),"B8":(132.5,650),"G7":(563.75,563.75),
+                       "E7":(391.25,563.75),"C7":(218.75,563.75),"A7":(46.25,563.75),"H6":(650,477.5),"F6":(477.5,477.5),
+                       "D6":(305,477.5),"B6":(132,477.5)}       
+    
+    damas_tablero=[]
+        
+    for i in damas_blancas:
+        damas_tablero.append(damas("Blanco",dic_pos[i]))
+    for i in damas_negras:
+        damas_tablero.append(damas("Negro",dic_pos[i]))
+        
+
+        
 
     while game_over is False:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 game_over = True
 
-        botones = pygame.mouse.get_pressed()
+        botones = pygame.mouse.get_pos()
         
         if botones[0]:
             pos = pygame.mouse.get_pos()
@@ -92,35 +139,36 @@ def main():
         pantalla.fill(color[2])
         
         crear_tablero(pantalla)
-        pygame.draw.rect(pantalla, color[2],[(eje_y.index(str(seleccion[0])) * casillas_size + borde_size),((int(seleccion[1])-1) * casillas_size + borde_size), casillas_size, casillas_size])
+        pygame.draw.rect(pantalla, color[3],[(eje_y.index(str(seleccion[0])) * casillas_size + borde_size),((int(seleccion[1])-1) * casillas_size + borde_size), casillas_size, casillas_size])
         fuente = pygame.font.Font(None, 30)
         pantalla.blit(fuente.render(str(seleccion),1,color[0]), [375,725])
-        
-        black_piece = pygame.image.load("black_circle.png")
-        b_piece_centrada = (casillas_size-black_piece.get_width()) // 2
-        
-        if pygame.mouse.get_pressed() == (1,0,0) and len(posiciones_black) < 8:
-            posiciones_black.append((int(pygame.mouse.get_pos()[0])-b_piece_centrada,int(pygame.mouse.get_pos()[1])- b_piece_centrada))
-            
-        for i in posiciones_black:
-            pantalla.blit(black_piece, i)
-        
-        pygame.display.flip()
 
+
+        for i in damas_tablero:
+            i.draw(pantalla)
+        
+        for i in damas_tablero:
+            if damas.seleccionado(i, casillas_size, pygame.mouse.get_pos()) == True:
+                old_pos = BuscarKey(dic_pos, i.pos)
+                damas.move(i)
+                if i.color == "Blanco":
+                    a = damas_blancas.index(old_pos)
+                    new_pos = BuscarKey(dic_pos, i.pos)
+                    damas_blancas[a] = new_pos
+                elif i.color == "Negro":
+                    a = damas_negras.index(old_pos)
+                    new_pos = BuscarKey(dic_pos, i.pos)
+                    damas_negras[a] = new_pos
+                
+                
+                i.draw(pantalla)
+                
+            
+        pygame.display.flip()
+        
     pygame.quit()
 
-#Colores
-color = [(96,96,96),(255,204,153),(255, 255, 255)]  #Gris, Marrón, Blanco
 
-#Tamaños
-pantalla_size = (750, 750)
-borde_size = 30
-n_casillas = 8
-casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
-
-#Eje
-eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-
-if __name__ == "__main__":
-    posiciones_black = []   #Ojo: Establecer error si hay más de 8 fichas
+if __name__ == "__main__": 
     main()
+
