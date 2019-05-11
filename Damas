@@ -11,15 +11,27 @@ class damas:
     
     def draw(self, screen):
         if self.color == "Negro":
-            screen.blit(pygame.image.load("black_circle.png").convert(), self.pos)
+            screen.blit(pygame.image.load("black_circle.png"), self.pos)
         if self.color == "Blanco":
-            screen.blit(pygame.image.load("white_circle.png").convert(), self.pos)
+            screen.blit(pygame.image.load("white_circle.png"), self.pos)
     
     def seleccionado(self, casilla, pos_raton):
         if ((self.pos[0] - (casilla/2)) < pos_raton[0] < (self.pos[0] + (casilla/2))) and ((self.pos[1] - (casilla/2)) < pos_raton[1] < (self.pos[1] + (casilla/2))):
             return True
         else:
             return False 
+    
+    def comprobar(self):
+        key=pygame.key.get_pressed()
+        
+        if key[pygame.K_LEFT]: 
+            return (float(self.pos[0] - 86.25), float(self.pos[1]))
+        if key[pygame.K_RIGHT]:
+            return (float(self.pos[0] + 86.25), float(self.pos[1]))
+        if key[pygame.K_UP]:   
+            return (float(self.pos[0]), float(self.pos[1] - 86.25))
+        if key[pygame.K_DOWN]: 
+            return ((float(self.pos[0]), float(self.pos[1] + 86.25)))
     
     def move(self):
         
@@ -33,6 +45,8 @@ class damas:
             self.pos = (self.pos[0], self.pos[1] - 86.25)
         if key[pygame.K_DOWN]and (self.pos[1] + 86.25) > 30 and (self.pos[1] + 86.25) < 720: 
                 self.pos = (self.pos[0], self.pos[1] + 86.25)
+
+    
 
             
 
@@ -89,10 +103,16 @@ def posicion(mouse, actual):
                 actual = [eje_y[i], j + 1]
     return actual
 
-def BuscarKey(diccionario, localizacion):
+def BuscarLlave(diccionario, localizacion):
     for name, loc in diccionario.items():
         if loc == localizacion:
             return name
+
+def mydama(lista, posicion):
+    for i in lista:
+        if (i.pos == posicion):
+            return i
+
             
 def main():
     pygame.init()
@@ -113,18 +133,21 @@ def main():
                        "F4": (477.5,305),"H4":(650,305),"A5":(46.25,391.25),"C5":(218.75,391.25), "E5":(391.25,391.25),
                        "G5":(563.75,391.25),"H8":(650,650),"F8":(477.5,650),"D8":(305,650),"B8":(132.5,650),"G7":(563.75,563.75),
                        "E7":(391.25,563.75),"C7":(218.75,563.75),"A7":(46.25,563.75),"H6":(650,477.5),"F6":(477.5,477.5),
-                       "D6":(305,477.5),"B6":(132,477.5)}       
+                       "D6":(305,477.5),"B6":(132.5,477.5)}       
     
     damas_tablero=[]
-        
+    
     for i in damas_blancas:
         damas_tablero.append(damas("Blanco",dic_pos[i]))
     for i in damas_negras:
         damas_tablero.append(damas("Negro",dic_pos[i]))
-        
-
-        
-
+   
+    
+    #posiciones_prueb = []
+    #for i in damas_tablero:
+      #      posiciones_prueb.append(i.pos)
+    
+    count = 0
     while game_over is False:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -142,27 +165,28 @@ def main():
         pygame.draw.rect(pantalla, color[3],[(eje_y.index(str(seleccion[0])) * casillas_size + borde_size),((int(seleccion[1])-1) * casillas_size + borde_size), casillas_size, casillas_size])
         fuente = pygame.font.Font(None, 30)
         pantalla.blit(fuente.render(str(seleccion),1,color[0]), [375,725])
-
-
-        for i in damas_tablero:
-            i.draw(pantalla)
+        
+        posiciones_prueb = []
         
         for i in damas_tablero:
+            posiciones_prueb.append(i.pos)
+
+        
+        for i in damas_tablero:
+            i.draw(pantalla)
+            
             if damas.seleccionado(i, casillas_size, pygame.mouse.get_pos()) == True:
-                old_pos = BuscarKey(dic_pos, i.pos)
+                  
+                
+                if i.comprobar() in posiciones_prueb:
+                    del damas_tablero[damas_tablero.index(mydama(damas_tablero,i.comprobar()))]
+                    del posiciones_prueb[posiciones_prueb.index(i.comprobar())]
+                    
+                    
                 damas.move(i)
-                if i.color == "Blanco":
-                    a = damas_blancas.index(old_pos)
-                    new_pos = BuscarKey(dic_pos, i.pos)
-                    damas_blancas[a] = new_pos
-                elif i.color == "Negro":
-                    a = damas_negras.index(old_pos)
-                    new_pos = BuscarKey(dic_pos, i.pos)
-                    damas_negras[a] = new_pos
-                
-                
+                    
                 i.draw(pantalla)
-                
+            
             
         pygame.display.flip()
         
@@ -172,3 +196,5 @@ def main():
 if __name__ == "__main__": 
     main()
 
+
+    
