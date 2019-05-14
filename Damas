@@ -65,6 +65,7 @@ eje_y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
 #Tablero
 def crear_tablero(pantalla):
+"""Crea el tablero"""
     
     color = [(96,96,96),(255,204,153),(255, 255, 255)]  #Gris, Marrón, Blanco
     pantalla_size = (750, 750)  #DIMENCIONES
@@ -90,6 +91,7 @@ def crear_tablero(pantalla):
 
 #Posicion
 def posicion(mouse, actual):
+"""Retorna la posicion del raton"""
     n_casillas = 8
     casillas_size = (pantalla_size[0]-(2*borde_size))/n_casillas
     
@@ -104,11 +106,13 @@ def posicion(mouse, actual):
     return actual
 
 def BuscarLlave(diccionario, localizacion):
+"""Le das un valor y te devuelve su llave"""
     for name, loc in diccionario.items():
         if loc == localizacion:
             return name
 
 def mydama(lista, posicion):
+"""Te devuelve la posicion de la lista"""
     for i in lista:
         if (i.pos == posicion):
             return i
